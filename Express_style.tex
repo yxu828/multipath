@@ -1,0 +1,484 @@
+\documentclass[10pt]{article}
+% \documentclass[10pt]{osajnl}
+
+
+%% Specify the Express journal you are submitting to
+%\usepackage[OME]{express}
+\usepackage[OE]{express}
+%\usepackage[BOE]{express}
+\usepackage{float}
+
+\begin{document}
+
+\title{Causes and Corrections for Bimodal Multipath Scanning with Structured Light}
+
+
+\author{Yu Zhang,\authormark{1,2} Daniel L. Lau,\authormark{2,3} and Ying Yu\authormark{2}}
+
+\address{\authormark{1}School of Electronic Science and Engineering, Nanjing University, Nanjing, 210023, China\\
+\authormark{2}Department of Electrical Engineering, University of Kentucky, Lexington, KY, 40507, USA\\
+
+
+% \email{\authormark{*}dllau@uky.edu} %% email address is required
+\authormark{3}dllau@uky.edu\\
+
+}
+
+
+
+% \homepage{http:...} %% author's URL, if desired
+
+%%%%%%%%%%%%%%%%%%% abstract and OCIS codes %%%%%%%%%%%%%%%%
+%% [use \begin{abstract*}...\end{abstract*} if exempt from copyright]
+
+\begin{abstract}
+Structured light illumination is an active 3-D scanning technique based on projecting/capturing a set of striped patterns and measuring the warping of the patterns as they reflect off a target object's surface. As designed, each pixel in the camera sees exactly one pixel from the projector; however, there are exceptions to this when the scanned surface has a complicated geometry with step edges and other discontinuities in depth or where the target surface has specularities that reflect light away from the camera. These situations are generally referred to multipath where a given camera pixel receives light from multiple positions from the projector.  In the case of bimodal multipath, the camera pixel receives light from exactly two positions from the projector which occurs when light bounce back from a reflective surface or along a step edge where the edge slices through a pixel so that the pixel sees both a foreground and background surface.  In this paper, we present a general mathematical model and address the bimodal multipath issue in a phase measuring profilometry scanner to measure the constructive and destructive interference between the two light paths, and by taking advantage of this interesting cue, separate the paths and make two separated depth measurements. We also validate our algorithm with both simulation and a number of challenging real cases.    
+\end{abstract}
+
+\ocis{(110.6880) Three-dimensional image acquisition; (120.5800) Scanners.} % REPLACE WITH CORRECT OCIS CODES FOR YOUR ARTICLE, MINIMUM OF TWO; Avoid using the OCIS codes for “General” or “General science” whenever possible.
+%For a complete list of OCIS codes, visit: https://www.osapublishing.org/oe/submit/ocis/
+
+%%%%%%%%%%%%%%%%%%%%%%% References %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{99}
+
+\bibitem{morano1998structured} R. A. Morano, C. Ozturk, R. Conn, S. Dubin, S. Zietz, and J. Nissano, "Structured light using pseudorandom codes," IEEE Transactions on Pattern Analysis and Machine Intelligence {\bfseries 20}(3), 322--327 (1998).
+
+\bibitem{geng2011structured}  J. Geng, "Structured-light 3D surface imaging: a tutorial," \aop {\bfseries 3}(2), 128--160 (2011).
+
+\bibitem{gupta2013structured} M. Gupta, Q. Yin, and S. K. Nayar, "Structured light in sunlight," {\itshape In Proceedings of the IEEE International Conference on Computer Vision} (IEEE, 2013), pp.545--552.
+
+\bibitem{gupta2012micro} M. Gupta,  and S. K. Nayar,  "Micro phase shifting," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern
+Recognition} (IEEE, 2012), pp. 813--820.
+
+\bibitem{liu2010dual}  K. Liu, Y. Wang,  D. L. Lau, Q. Hao, and L. G. Hassebrook,  "Dual-frequency pattern scheme for high-speed 3-D shape measurement," \opex {\bfseries 18}(5), 5229--5244 (2010). 
+
+\bibitem{gupta2011structured} M. Gupta,  A. Agrawal, A. Veeraraghavan, and S. G. Narasimhan, "Structured light 3D scanning in the presence of global illumination," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern
+Recognition} (IEEE, 2011), pp.713--720.
+
+\bibitem{rosman2016information} G. Rosman,  D. Rus, and J. W. Fisher, "Information-driven adaptive structured-light scanners," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern Recognition} (IEEE, 2016), pp.874--883.
+
+\bibitem{o20143d} M. O'Toole, J.  Mather, and K. N. Kutulakos, "3d shape and indirect appearance by structured light transport," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern Recognition} (IEEE, 2014), pp.3246--3253.
+
+\bibitem{boyer1987color}  K. L. Boyer, and A. C. Kak,  "Color-encoded structured light for rapid active ranging," IEEE Transactions on Pattern Analysis and Machine Intelligence {\bfseries 9}(1), 14--28 (1987).
+
+\bibitem{geng1996rainbow}  Z. J. Geng, "Rainbow three\--dimensional camera: new concept of high\--speed three\--dimensional vision systems," Optical Engineering  {\bfseries 35}(2), 376--383 (1996).
+
+\bibitem{freedman2012depth} B. Freedman, A. Shpunt, M. Machline,  and Y. Arieli, Prime Sense Ltd., "Depth mapping using projected patterns," U.S. patent 8,150,142 (2012).
+
+\bibitem{ryan2016hyperdepth} S. R. Fanello, C. Rhemann, V. Tankovich, A. Kowdle,  S. O. Escolano, D. Kim, and  S. Izadi, "Hyperdepth: Learning depth from structured light without matching," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern Recognition} (IEEE, 2016), pp.5441--5450.
+
+\bibitem{martinez2013kinect} M. Martinez, and R. Stiefelhagen, "Kinect Unleashed: Getting Control over High Resolution Depth Maps," in {\itshape International Conference on Machine Vision Applications} (IEEE, 2013), pp. 247--250.
+
+\bibitem{srinivasan1984automated}  V. Srinivasan, H. C. Liu,  and  M. Halioua, 1984. "Automated phase-measuring profilometry of 3-D diffuse objects," \ao  {\bfseries 23}(18), pp.3105-3108.
+
+\bibitem{chen2008modulated} T. Chen, H. P. Seidel,  and  H. P. Lensch, " Modulated phase-shifting for 3D scanning," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern Recognition} (IEEE, 2008), pp.1--8.
+
+\bibitem{6136522} Y. Wang, K. Liu, Q. Hao, X. Wang, D. L. Lau,  and  L. G.Hassebrook,  "Robust active stereo vision using kullback\--leibler divergence," IEEE transactions on pattern analysis and machine intelligence {\bfseries 34}(3), 548--563 (2012).
+
+\bibitem{dorrington2011separating} A. A. Dorrington, J. P. Godbaz,  M. J. Cree, A. D. Payne, and  L. V. Streeter,  "Separating true range measurements from multi-path and scattering interference in commercial range cameras," Proc. SPIE {\bfseries 7864}, 1--1 (2011).
+
+\bibitem{bhandari2013multifrequency} A. Bhandari, A. Kadambi, R. Whyte, L. Streeter,  C. Barsi, A. Dorrington,  and R. Raskar, "
+Multifrequency time of flight in the context of transient renderings,"  in {\itshape SIGGRAPH} (ACM, 2013) pp 46.
+
+\bibitem{godbaz2012closed} J. P. Godbaz,   M. J. Cree, and A. A. Dorrington,  "Closed-form inverses for the mixed pixel/multipath interference problem in amcw lidar," Proc. SPIE {\bfseries 8296}, 1-15 (2012).
+
+\bibitem{freedman2014sra}  D. Freedman, Y. Smolin, E. Krupka,  I. Leichter, and M. Schmidt, "SRA: Fast removal of general multipath for ToF sensors," in {\itshape  European Conference on Computer Vision } (Springer, 2014), pp.234--249.
+
+\bibitem{naik2015light} N. Naik, A. Kadambi, C. Rhemann, S. Izadi,  R. Raskar, and S. B. Kang, " A light transport model for mitigating multipath interference in time-of-flight sensors," in {\itshape Proceedings of IEEE Conference on Computer Vision and Pattern Recognition} (IEEE, 2015), pp.73--81.
+
+\bibitem{Nayar:2006:FSD:1141911.1141977}  S. K. Nayar,  G. Krishnan, M. D. Grossberg,  and  R. Raskar, "Fast separation of direct and global components of a scene using high frequency illumination," ACM Transactions on Graphics {\bfseries 25}(3), 935--944 (2006).
+
+\bibitem{o2014temporal} M. O'Toole,  F. Heide, L. Xiao, M. B. Hullin, W. Heidrich,  and K.N. Kutulakos,  "Temporal frequency probing for 5D transient analysis of global light transport," ACM Transactions on Graphics {\bfseries 33}(4), 87 (2014).
+
+\bibitem{gupta2015phasor} M. Gupta,  S. K. Nayar, M. B. Hullin, and  J. Martin, " Phasor imaging: A generalization of correlation-based time-of-flight imaging, " ACM Transactions on Graphics {\bfseries 34}(5), 156 (2015).
+
+\bibitem{kadambi2013coded}  A. Kadambi, R. Whyte, A. Bhandari,  L. Streeter, C. Barsi, A. Dorrington,  and R. Raskar,   "Coded time of flight cameras: sparse deconvolution to address multipath interference and recover time profiles," ACM Transactions on Graphics  {\bfseries 32}(6), 167 (2013).
+
+\bibitem{dedrick2011improving}  E. Dedrick, "Improving SLI Performance in Optically Challenging Environments," University of Kentucky, (2011).
+ 
+\bibitem{couture2011unstructured} V. Couture, N. Martin, and S. Roy, "Unstructured light scanning to overcome interreflections,"  in {\itshape Proceedings of IEEE International Conference on Computer Vision} (IEEE, 2011), pp.1895--1902.
+
+\bibitem{nayar2006fast} S. K. Nayar, G. Krishnan, M. D. Grossberg, and R. Raskar, "Fast separation of direct and global components of a scene using high frequency illumination,"  ACM Transactions on Graphics  {\bfseries 25}(3) 935--944 (2006).
+
+\bibitem{dorrington2011separating} A. A. Dorrington,  J. P. Godbaz, M. J. Cree, A. D. Payne,  and L. V. Streeter, "Separating true range measurements from multi-path and scattering interference in commercial range cameras,"  Proc. SPIE {\bfseries 7864}, 1 (2011).
+
+\bibitem{Li:97}  J. L. Li, H. J. Su,  and  X. Y. Su,  "Two-frequency grating used in phase-measuring profilometry," \ao  {\bfseries 36}(1), 277--280 (1997).
+
+\bibitem{Daley:98}  R. C. Daley, and L. G. Hassebrook,  " Channel capacity model of binary encoded structured light-stripe illumination," \ao  {\bfseries 37}(17), 3689--3696 (1998).
+
+\bibitem{Liu:10}  K. Liu, Y. Wang, D. L. Lau, Q. Hao, and L. G. Hassebrook,  "Gamma model and its analysis for phase measuring profilometry," J. Opt. Soc. Am. A {\bfseries 36}(3), 553--562 (2010).
+
+
+
+% {\small
+% \bibliographystyle{ieee}
+% \bibliography{egbib}
+% }
+
+\end{thebibliography}
+
+% \bibliography{sample}
+% \bibliographystyle{unsrt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%  body  %%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Structured light illumination (SLI) refers to a method of 3D scanning that uses a projector to project a series of light striped patterns such that a camera can reconstruct depth based on the warping of the pattern over the target object's surface~\cite{morano1998structured,geng2011structured,gupta2013structured,gupta2012micro,liu2010dual,gupta2011structured,rosman2016information,o20143d}.  Examples of SLI include single pattern techniques which project a static pattern that is continuously projected and from which a 3D reconstruction can be made from a single snap shot~\cite{geng2011structured,boyer1987color,geng1996rainbow, freedman2012depth}.  This is the basic approach of the Prime Sense camera used in the Microsoft Kinect V1 product which uses a pseudo-random dot pattern such that dots within small windows of the captured image can be matched to the projected dot constellations~\cite{ryan2016hyperdepth,freedman2012depth,martinez2013kinect}. 
+
+Multiple pattern SLI scanners, alternatively, project a series of patterns, trading temporal resolution for spatial resolution such that each pixel can be independently processed from its neighbors and produce a single point for each pixel in the camera.  As a prime example, the multiple pattern process of gray coding projects the binary bits forming an 8-10 bit address for each pixel of the projector. By deciphering the on-off-on patterns back to binary bits, each pixel can determine what row of the projector they are looking. In Phase Measuring Profilometry, the row coordinates of each pixel are encoded through phase modulation~\cite{srinivasan1984automated,liu2010dual,geng2011structured,chen2008modulated}. These PMP scanners are common for industrial metrology applications with resolutions that can exceed 10 microns.
+
+As an active imaging technique, structured light is susceptible to errors and distortions caused by the redirection of the projected light to form multiple paths from projector to camera besides the direct path of projector to target to camera~\cite{6136522}.  It is a common problem and one of great interest to researchers because of the potentially catastrophic effects on scans. The same problem can be found in a range of 3D imaging modalities like time-of-flight (TOF) where light will reflect off specular surfaces onto neighboring surface points before reflecting back to the camera. Comparing SLI and TOF range modalities, a literature review on the topic of multi-path cancellation reveals an inordinate number of TOF papers over SLI.
+
+Examples of how to deal with multi-path issues in TOF include Dorrington~{\it et al.}~\cite{dorrington2011separating} as well as Bhandari~{\it et al.}~\cite{bhandari2013multifrequency} and Godbaz~{\it et al.}~\cite{godbaz2012closed} who take the common approach of making multiple depth measurements over many different modulation frequencies such that they derive a set of equations from which to fit the phase and magnitude of a multitude of possible component paths. Freedman~{\it et al.}~\cite{freedman2014sra} assume sparsity in reflection and assume the problem is restricted to a small number of multi-path components, which restrict further extension to other scenarios. 
+
+Naik~{\it et al.}~\cite{naik2015light} take the approach of deriving a light transport model~\cite{Nayar:2006:FSD:1141911.1141977} to combine the standard measurements from a TOF camera with information from direct and global light transport.  By doing so, they separate the phase associated with the direct light path, placing all sub-sequent paths into a single indirect light component.  O'Toole~{\it et al.}~\cite{o20143d,o2014temporal} employ the epipolar geometry constraint and re-design the optical system to separate the direct and indirect light paths. They modify the optical system and block the global component during data capture procedure.  Gupta~{\it et al.}~\cite{gupta2015phasor} study the temporal illumination on and report that global light transport vanishes at high frequencies. They propose a ToF based shape recovery technique and a method to separate direct and global light. Kadambi~{\it et al.}~\cite{kadambi2013coded} use a coded illumination ToF camera to achieve light sweep imaging with multi-path correction. 
+
+Dedrick~\cite{dedrick2011improving} identify multipath in SLI scans without presenting an effective algorithm for extracting the absolute paths from the collected scans. Courture~{\it et al.} ~\cite{couture2011unstructured} design special pattern to overcome interreflections which is quite different from traditional phase shifting pattern. Nayar ~{\it et al.}~\cite{nayar2006fast} show the radiance of a scene point is due to direct illumination of the point by the source and global illumination arising from diffuse interreflection, subsurface scattering, volumetric scattering and translucency. Gupta and Nayar~\cite{gupta2012micro} use this conclusion and present an approach using a narrow, high frequency band structured light pattern to separate direct and global illumination for shape recovery for real scenes. However, the separated direct component can still suffer from bimodal multipath. Their method cannot address bimodal multipath in the direct image and will cause severe artifacts in the reconstruction because they still use traditional phase shifting method to solve phase/depth in the direct component. Furthermore, the authors relate that they do not consider the camera defocus effect, resulting in incorrect depths especially at depth edges. 
+
+\subsection{Contributions}
+In reviewing the available literature on multi-path interference and its cancellation, the many papers devoted to TOF sensing require unique hardware setups which are often times expensive to build. Structure light scanners being readily constructed from commodity components are, therefore, widely studied; however, limited concrete solutions to the multi-path problem exist for these scanners.  In this paper, we present an inexpensive and practical approach to address this issue without any hardware modification by casting the problem of multi-path interference in terms of the constructive and destructive interference of sinusoidal waves of equal frequency commonly associated with the physics of standing waves and moire interferometry. 
+
+The proposed model is consistent with Dorrington~{\it et al.}~\cite{dorrington2011separating}, but it treats the solution in terms of a structured light scanner.  And it includes an intuitive construction that explains how paths interact as a function of the spatial frequency to produce standing waves of constructive and destructive interference.   In so doing, we establish an equation for this interference such that we can visualize multipath as a sinusoidal pattern plotted versus pattern frequency and varying as a function of the phase difference between component paths.  
+
+The experimental results that we present also deal with a problem unique to structured light, and that is the low-pass filtering affect of the component optics that cause high spatial frequency patterns to have a lower amplitude than low spatial frequencies.  In traditional structured light, this is an issue that is largely ignored since the final phase is determined by the high spatial frequency, with lower frequencies used for unwrapping the high.  This paper deals directly with the issue by establishing an envelope function during scanner calibration such that we can observe bi-modal multi-path in the presence of a non-flat spatial frequency response. 
+
+To the best of our knowledge, we are the first to report the interesting constructive and destructive cue for bimodal multipath using signal processing theory and present a practical approach to simultaneously identify and extract the dominant and non-dominant phases/magnitudes by taking advantage of that cue in an intuitive way without any hardware modifications or additional requirements for customized pattern. As a result, it is easy to be integrated with existing structured light systems. Central to this separation, we propose the idea of a zero-frequency PMP pattern which projects a time-varying but spatially constant structured light pattern as a way to observe the modulated light component absent the multi-path interference that may otherwise partially cancel the modulated light. 
+
+
+\section{Background}
+%\section{Phase Measuring Profilometry}
+\noindent Three-dimensional surface scanning by means of structured light is performed using a series of striped patterns projected onto a target scene and captured by a digital camera, placed at a triangulation angle of the projector's line of sight.  The pixels of the captured images are then processed to identify a unique projector row coordinate for which the subject camera pixel corresponds. Perhaps one of the simplest means of SLI is through the use of phase-shift keying where the component patterns are defined by the set, $\{I^p_n:n=0,1,\ldots,N-1\}$, according to:
+\begin{equation}
+    \label{EQ:ProjectorPattern}
+    I^p_n(x^p, y^p) = \frac{1}{2} + \frac{1}{2} \cos \left( 2\pi (\frac{n}{N}-y^p)\right).
+\end{equation}
+where $(x^p, y^p)$ is the column and row coordinate of a pixel in the projector, $I_n^p$ is the intensity of that pixel in a projector with dynamic range from 0 to 1, and $n$ represents the phase-shift index over the $N$ total patterns.
+
+For reconstruction, a camera captures each image where the sine wave pattern is distorted by the scanned surface topology, resulting in the patterned images expressed as:
+\begin{equation}
+    I_n^c(x^c, y^c) = A^c + B^c \cos\left( \frac{2\pi n}{N} - \theta \right).
+    \label{EQ:CameraPattern}
+\end{equation}
+where $(x^c, y^c)$ is the coordinates of a pixel in the camera while $I_n^c(x^c, y^c)$ is the intensity of that pixel. The term $A^c$ is the averaged pixel intensity across the pattern set that includes the ambient light component, which can be derived according to:
+\begin{equation}
+    A^c = \frac{1}{N}\sum_{n=0}^{N-1}I_n^c(x^c, y^c).
+    \label{EQ:Ac}
+\end{equation}
+Correspondingly, the term $B^c$ is the intensity modulation of a given pixel and is derived from $I_n^c(x^c, y^c)$ in terms of real and imaginary components where: 
+\begin{equation}
+    B^c_{\cal R}  =  \sum_{n=0}^{N-1}I_n^c(x^c, y^c) \cos\left(\frac{2\pi n}{N}\right)
+    \label{bcCosEqn}
+\end{equation}
+and
+\begin{equation}
+    B^c_{\cal I}  =  \sum_{n=0}^{N-1}I_n^c(x^c, y^c) \sin\left(\frac{2\pi n}{N}\right)
+    \label{bcSinEqn}
+\end{equation}
+such that 
+\begin{equation}
+    B^c  =  \left\| {B^c_{\cal R}}+j{B^c_{\cal I}}   \right\| =  \left\{ {B^c_{\cal R}}^2+{B^c_{\cal I}}^2 \right\}^\frac{1}{2},
+\end{equation}
+which is the amplitude of the observed sinusoid.
+
+If $I_n^c(x^c, y^c)$ is constant or less affected by the projected sinusoid patterns, $B^c$ will be close to zero. Thus $B^c$ is employed as a shadow noise detector/filter~\cite{Li:97} such that the shadow-noised regions, with small $B^c$ values, are discarded from further processing. Of the reliable pixels with sufficiently large $B^c$, $\theta$ represents the phase value of the captured sinusoid pattern derived as:
+\begin{equation}
+    \theta = \angle ({B^c_{\cal R}}+j{B^c_{\cal I}}) =   \arctan \left\{\frac{B^c_{\cal I}}{B^c_{\cal R}}\right\},
+    \label{EQ:Phase}
+\end{equation}
+which is used to derive the projector row according to $\theta=2\pi y^p$.
+
+Given that the reconstructed $\theta$ is affected by distortions in the projector/camera such as thermal noise~\cite{Daley:98} or gamma~\cite{Liu:10}, Eq.~(\ref{EQ:CameraPattern}) is commonly modified to include higher spatial frequencies according to:
+\begin{equation}
+    I^p_n(x^p, y^p) = \frac{1}{2} + \frac{1}{2} \cos \left( 2\pi (\frac{n}{N} - K y^p)\right),
+\end{equation}
+where $K$ is the number of sinusoidal wavelengths across the projector in any one frame.  These higher frequency scans result in ambiguities in $\theta$ which are resolved by phase unwrapping via lower frequency $K$s.  For instance, one might use three separate scans with $K=1$, $4$, and $16$ using the $K=1$ to unwrap the $K=4$ scan and then using that resulting scan to unwrap the $K=16$ scan.  This procedure results in a scan with ${1/16}^{th}$ the noise of just the $K=1$ scan where $y^p = \theta/(K 2\pi)$.
+
+In choosing $K$, an experienced operator knows that quantization noise in the projector requires that $K$ be selected such that the corresponding wavelength of the spatial sinusoids correspond to integer multiples of $N$ pixels; otherwise, banding artifacts are visible in the reconstruction of $\theta$.  At the same time, larger values of $N$ result in less thermal noise as well as in the elimination of gamma.  So while a small $N$ allows for higher spatial frequency $K$, it also results in high levels of Gaussian noise in $\theta$ while also making $\theta$ susceptible to gamma distortion.  As such, we recommend an $N$ no smaller than 8, meaning a VGA projector is limited to a maximum frequency of $K=60$ with the sinusoid moving 1 pixel with each step in $n$.
+
+\section{Bimodal Multi-Path Model}
+\noindent In signal processing, it is often times convenient to assume a sample of an analogue signal is its value at an infinitesimally thin sliver of time, but in fact, a sample is the average value of the signal over a fixed interval in time.  In digital cameras, a pixel collects light over a fixed angle in the horizontal, $\theta$, and vertical, $\phi$.  As such, an accurate model of a pixel is not Eqs.~(\ref{bcCosEqn}) and (\ref{bcSinEqn}) but by:
+\begin{equation}
+    B^c_{\cal R}  =  \sum_{n=0}^{N-1} \int_{\theta}\int_{\phi} I_n^c(\theta, \phi) 
+    			    \cos\left(\frac{2\pi n}{N}\right) d\theta d\phi
+\end{equation}
+and
+\begin{equation}
+    B^c_{\cal I}  = \sum_{n=0}^{N-1} \int_{\theta}\int_{\phi} I_n^c(\theta, \phi) 
+    		          \sin\left(\frac{2\pi n}{N}\right) d\theta d\phi.
+\end{equation}
+In this form, we can now identify the principal problem of multi-path, which occurs when $I_n^c(\theta, \phi)$ corresponds to a foreground object for same range on $\theta$ and $\phi$ and a background object for the rest of the $\theta$ and $\phi$ within the field of view of the subject pixel. We can describe this mathematically according to:
+\begin{eqnarray}
+    B^c_{\cal R}  & = & \sum_{n=0}^{N-1} \int_{\theta_f}\int_{\phi_f} I_n^c(\theta, \phi) 
+    			    \cos\left(\frac{2\pi n}{N}\right) d\theta_f d\phi_f + 					\nonumber \\
+& &			     \sum_{n=0}^{N-1} \int_{\theta_b}\int_{\phi_b} I_n^c(\theta, \phi) 
+    			    \cos\left(\frac{2\pi n}{N}\right) d\theta_b d\phi_b
+\end{eqnarray}
+and
+\begin{eqnarray}
+    B^c_{\cal I}  & = &  \sum_{n=0}^{N-1} \int_{\theta_f}\int_{\phi_f} I_n^c(\theta, \phi) 
+    			    \sin\left(\frac{2\pi n}{N}\right) d\theta_f d\phi_f +     					\nonumber \\
+& &			     \sum_{n=0}^{N-1} \int_{\theta_b}\int_{\phi_b} I_n^c(\theta, \phi) 
+    			    \sin\left(\frac{2\pi n}{N}\right) d\theta_b d\phi_b
+\end{eqnarray}
+where $\theta_f$ and $\phi_f$ represent the range of $\theta$ and $\phi$ covering the foreground object while $\theta_b$ and $\phi_b$ cover the background object. We can simplify both these equations by writing:
+\begin{equation}
+    B^c_{\cal R}  =  B^{c,f}_{\cal R} + B^{c,b}_{\cal R}
+\end{equation}
+and
+\begin{equation}
+    B^c_{\cal I}  =  B^{c,f}_{\cal I} + B^{c,b}_{\cal I}
+\end{equation}
+where we added the superscripts $f$ and $b$ to distinguish between the foreground and background components on $B^c_{\cal R}$ and $B^c_{\cal I}$. 
+
+Now notice that by increasing the spatial frequency of the PMP patterns by a factor of $K$ increases the phase term by an equal amount while keeping the amplitude of the sinusoid constant.  In the case of multi-path, this frequency scaling has a far different affect as illustrated graphically in Fig.~\ref{fig00} where we show (left) the fore and background components assuming unit frequency while (center) and (right) show the same components when $K=8$ and $12$.  What Fig.~\ref{fig00} (left) shows in red are the complex vectors formed by $B^{c,f}_{\cal R}$ and $B^{c,f}_{\cal I}$ and $B^{c,b}_{\cal R}$ and $B^{c,b}_{\cal I}$, while the blue vector shows the superimposed vectors forming the single vector formed by $B^c_{\cal R}$ and $B^c_{\cal I}$. 
+
+By using a frequency scaling of $K$, we expect the direction or phase of the foreground and background vectors to scale by an equal amount.  
+Graphically, this is depicted by a rotation of the vectors around the origin.  Notice, though, that by rotating the vectors separately, that it is quite likely that the phase of the combined vectors are not equal to the scaling of the phase term prior to frequency scaling.  Likewise, the vectors may swing from constructively interfering where magnitude of the combine vectors is equal to the sum of the individual magnitudes to destructively interfering where the magnitude of the combine vectors is equal to the difference of the individual magnitudes. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.55in]{Figures/figure00}
+\caption{Illustration of the change in direction and magnitude in the (blue) observed complex vector ${B^c_{\cal R}}+j{B^c_{\cal I}}$ created by the superposition of (red) complex vectors from multi-path fore and background objects for $K=1$, $K=8$, and $K=12$.}
+\label{fig00}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.55in]{Figures/figure01}
+\caption{Illustration of the change in magnitude in the observed complex vector ${B^c_{\cal R}}+j{B^c_{\cal I}}$ as a function of the scaling factor $K$.}
+\label{fig01}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Bimodal Multi-Path Reconstruction}
+\noindent Mathematically, the magnitude and phase of the subject pixel can be defined according to vector $\vec{AB}$  with foreground vector $\vec{A}$ and background vector $\vec{B}$ such that:
+\begin{equation}
+\label{EQ:BimodalMultipath}
+|\vec{AB}|^2  =  |\vec{A}|^2 + |\vec{B}|^2 + 2 |\vec{A}||\vec{B}| cos(2\pi K(y^p_a - y^p_b))
+\end{equation}
+where $y_a$ and $y_b$ are the projector row coordinates for the two paths. It is this change in vector phase and magnitude in the superimposed vectors as a function of $K$ that is the prime means by which to detect multi-path in the scanned image. To separate the vectors $\vec{A}$ and $\vec{B}$ from $\vec{AB}$, a two-step procedure first finds the parameters $|\vec{A}|$, $|\vec{B}|$, and $dy = y^p_a - y^p_b$ that minimize the mean-squared error between $|\vec{AB}|$ and $|\vec{A} + \vec{B}|$ over all $K$, and then obtains the absolute phases $y^p_a$ and $y^p_b$ by minimizing the mean squared error between $\vec{AB}$ and $\vec{A} + \vec{B}$ with the constraints on $|\vec{A}|$, $|\vec{B}|$, and $dy$. We formulate it as Eq.~(\ref{EQ:solver}). 
+\begin{equation}
+\label{EQ:solver}
+\arg\min_{|\vec{A}|,|\vec{B}|,dy} \sum_K \{ |\vec{AB}| - |\vec{A} + \vec{B}| \}^2
+\end{equation}
+To minimize the search space from three independent variables $|\vec{A}|$, $|\vec{B}|$, and $dy$ to the two $|\vec{A}|$ and $dy$, we define a zero-frequency scan where $K=0$ to obtain $\vec{AB}_{0}$ such that:
+\begin{equation}
+|\vec{AB}_{0}|^2  =  |\vec{A}|^2 + |\vec{B}|^2 + 2 |\vec{A}||\vec{B}|.
+\end{equation}
+From this, we get the constraint:
+\begin{equation}
+|\vec{A}| + |\vec{B}| = |\vec{AB}_{0}|
+\end{equation}
+so that we can perform an exhaustive search over $|\vec{A}|$, $|\vec{B}|$, and the phase difference $y^p_a - y^p_b$ along the line $|\vec{B}| = |\vec{AB}_{0}| - |\vec{A}|$ to find the values that minimize the mean-squared error in Eq.~(\ref{EQ:BimodalMultipath}) over all scanned values of $K$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.55in]{Figures/figure05}
+\caption{Plots showing the ideal $|\vec{AB}|$ over $K$ for (top) the background pixel, (center) the edge pixel, and (bottom) the foreground pixel where the red line illustrates $|\vec{AB}|$ over continuous frequency.}
+\label{fig05}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+As an illustration of the proposed algorithm, Fig.~\ref{fig05} shows plots of simulated $|\vec{AB}|$ over $K$ for two pixels, separated in the projector by 12 pixels, with (top) just the background pixel, (bottom) just the foreground pixel, and (center) a linear combination of 55\% foreground and 45\% background pixel.  As will be the case for these stem plots in this paper, the frequency, $K$, ranges from 1 to 60 sinusoids, at wavelength intervals of 8 pixels, across the projector field of view and is plotted in Fig.~\ref{fig05} on the log scale.  Also note that the y-axis is normalized by $|\vec{AB}_{0}|$ and will range from 0 to 1. Shown in red are plots of the resulting best-fit $\vec{A}$ and $\vec{B}$ vectors where $|\vec{AB}|$ is plotted over continuous $K$ from 1 to 60 Hz.
+
+%We, furthermore, intend to extract the component vectors by looking at the change in phase and magnitude in the combined vectors as we vary $K$ over multiple scans. We depict this in Fig.~\ref{fig01} where we plot the magnitude in the combined vector as a function of $K$ where we can clearly see that the mean value in magnitude over all $K$ is equal to the magnitude of the larger component (foreground or background).  The difference in height between the peaks and valleys gives us the magnitude of the smaller vector. We can, likewise, use the position of the peaks and valleys to determine how much faster/slower the smaller vector is rotating around the larger vector, telling us the difference in phase between the two, which is enough to separate the two vectors and, thereby, make two separate measurements.
+
+\section{Experimental Evaluations}
+\noindent In order to demonstrate the proposed de-coupling technique, we consider the case of scanning two layers of half-inch, textureless, foam board where Fig.~\ref{fig02} shows the variance in the magnitude in the observed phasors, $\vec{AB}$, over all $K$ where the step edge is clearly visible as indicated by the bright vertical line.  To illustrate this sinusoidal shape on $|\vec{AB}|$, Fig.~\ref{fig03} shows stem plots of $|\vec{AB}|$ versus $K$ for the three pixels of Fig.~\ref{fig02}, labeled $A$, $B$, and $AB$ where $A$ corresponds to the foreground surface to the right of the edge, $B$ the background surface to the left of the edge, and $AB$ a pixel on the edge of the surface.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.25in]{Figures/figure02}
+\caption{Illustration of the variance in $|\vec{AB}|$ over $K$ for a textureless surface with a step edge with a foreground pixel labeled ${\bf A}$, a background pixel labeled ${\bf B}$, and edge pixel ${\bf AB}$.}
+\label{fig02}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.55in]{Figures/figure03}
+\caption{Stem plots showing the measured $|\vec{AB}|$ over $K$ for (top) the background pixel ${\bf B}$, (center) the edge pixel ${\bf AB}$, and (bottom) the foreground pixel ${\bf A}$.}
+\label{fig03}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!b]
+\centering\includegraphics[width=3.55in]{Figures/figure04}
+\caption{Stem plot of the measured $|\vec{AB}|$ over $K$ for a flat, textureless surface at the center of the scanners focal distance averaged over all pixels as an estimate of the systems modulation transfer function.}
+\label{fig04}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Observing the stem plot of Fig.~\ref{fig03}, one can see a consistent drop in magnitude at higher frequencies.  This is caused by the low-pass nature of the projector and camera optics, blurring the peaks and valleys of the projected sinusoids.  In order to account for the modulation transfer function of the projector/camera optics, we scan a white, textureless foam board at the center of our depth range and then average the value of $|\vec{AB}|$ over all pixels for all $K$ to produce the stem plot of Fig.~\ref{fig04}.  This resulting vector is then used as a normalizing factor for all subsequent scans. Applying this normalization to Fig.~\ref{fig03} produces the stem plots of Fig.~\ref{fig06} which now shows the expected flat response to fore and background pixels $A$ and $B$ and the distinctive sinusoidal shape for the edge pixel $AB$. 
+
+Using the proposed algorithm on the edge pixel ${\bf AB}$, we obtained the normalized magnitudes of 0.5560 and 0.4440 and phases of 0.3647 and 0.3917 (projector row coordinates 188 and 175 or 13 pixels difference), respectively, where the actual pixels have phases of 0.3650 and 0.3916.  If we also apply the algorithm to background pixel ${\bf B}$ under the assumption of multi-path, we extract magnitudes of 0.9770 and 0.0230 with phase values 0.3918 and 0.1698, resulting in the small sinusoidal curve.  For the foreground pixel ${\bf A}$, we extract magnitudes of 0.9680 and 0.0320 with phase values 0.3648 and 0.0998.  We associate these weak, secondary multi-path signals to noise in the sensor and, ignoring these terms, focus on the edge pixel, ${\bf AB}$, noting how close our estimated values are to the true phases derived through the traditional structured light phase processing.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.55in]{Figures/figure06}
+\caption{Plots showing the measured $|\vec{AB}|$ over $K$ for (top) the background pixel ${\bf B}$, (center) the edge pixel ${\bf AB}$, and (bottom) the foreground pixel ${\bf A}$ where the red line illustrates best-fit $|\vec{AB}|$ over continuous frequency. }
+\label{fig06}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Applying the exhaustive search over $|\vec{A}|$, $|\vec{B}|$, and the phase difference $y^p_a - y^p_b$ along the line $|\vec{A}|^2 + |\vec{B}|^2 = |\vec{AB}_{0}|^2$ for a small region of interest about the step edge. The exhaustive search for each pixel can be done within 12 seconds due to the limited searching space. With a GPU implementation, we can solve these pixels in parallel since each pixel is independent to others. Fig.~\ref{fig07} shows the value of the magnitude of the (left) primary, the larger of $|\vec{A}|$ or $|\vec{B}|$, and the (right) secondary or smaller term.  The corresponding primary and secondary phase terms are illustrated in Fig.~\ref{fig08}. Relying on the primary term for reconstructing depth, Fig.~\ref{fig08} illustrates the improved edge rendition sans bimodal multipath.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.15in]{Figures/figure07}
+\caption{Pseudo-color plot of the magnitudes of the primary (stronger) and secondary (weaker) bimodal path component along the step edge of Fig.~\ref{fig02}.}
+\label{fig07}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.15in]{Figures/figure08}
+\caption{Pseudo-color plot of the phases of the primary (stronger) and secondary (weaker) bimodal path component along the step edge of Fig.~\ref{fig02}.}
+\label{fig08}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+\centering\includegraphics[width=3.25in]{Figures/figure10}
+\caption{Surface plots of the phase images (left) before and (right) after applying the multi-path separation procedure where (left) shows the unprocessing phase image while (right) shows the phase image of the dominant component from Fig.~\label{fig08}.}
+\label{fig09}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+	\centering\includegraphics[width=2.2in]{Figures/setup}
+	\caption{Experimental setup scanning a white owl figurine through a polyester cloth mesh.}
+	\label{img00}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+	\centering\includegraphics[width=3.25in]{Figures/figure11}
+	\caption{Pseudo-color plot of the phases of the (top) raw phase image of the owl figurine beak and eyes through the mesh and the (bottom) primary  bimodal path component.}
+	\label{fig11}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{figure}[!t]
+%\centering\includegraphics[width=3.25in]{Figures/figure12}
+%\caption{Surface plots of the phases of the (top) raw phase image of %the owl figurine beak and eyes through the mesh and the (bottom) %primary  bimodal path component.}
+%\label{fig12}
+%\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[t]
+	\centering\includegraphics[width=4.3in]{Figures/owl}
+	\caption{Point cloud reconstructions of the owl figurine using raw phase (top), multi-path processed phase (middle) and both before and after in a single coordinate space (bottom).}
+	\label{owl}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+	\centering\includegraphics[width=1.0in]{Figures/Pab03}
+	\caption{Raw video frames for the $f=60$ cosinusoidal grating pattern.}
+	\label{Pab03}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+	\centering\includegraphics[width=0.90in]{Figures/Pab02} \hspace{0.05in}
+	\centering\includegraphics[width=0.90in]{Figures/Pab01} \hspace{0.05in}
+	\centering\includegraphics[width=0.90in]{Figures/Pab00}
+	\caption{The unit, mid, and high frequency phase images for frequencies $f=1$, $12$, and $60$ sinusoidal gratings.}
+	\label{figpah3}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+For a demonstration of multi-path separation in a structured light system, Fig.~\ref{img00} shows an experimental setup where we scanned a white plaster owl figurine through a polyester cloth mesh. Shown in Figs.~\ref{fig11} and \ref{owl} are the resulting phase reconstructions and point cloud showing the before effects of using the proposed multi-path detection scheme. It should be evident that this phase unwrapping error is devastating to the 3D reconstruction which we illustrate in Fig.~\ref{owl} where the reconstruction from the raw phase image is given in Fig.~\ref{owl}~(top) while Fig.~\ref{owl}~(middle) shows the reconstruction using the multi-path phase image.  Its not a mistake that the raw phase image produces a reconstruction that is shifted in Z by 50 millimeters. What is especially fascinating is placing both reconstructions in a common coordinate system is illustrated in Fig.~\ref{owl} ~(bottom) where there are phantom dots in the raw phase reconstruction that do perfectly correspond to points in the multi-path reconstruction.  Again, the multi-path reconstructions are correct, the traditional phase unwrapping is incorrect in these figures. From visual inspection, the proposed technique is a clear improvement over the scan produced without the process.
+
+
+
+
+For a more detailed analysis of the reconstructions produced using the new multi-path procedure, note that shown in Fig.~\ref{Pab03} is the first of eight frames corresponding to a sinusoidal wavelength of 8 projector pixels with 60 wavelengths across the projected image from top to bottom. We specifically looked at pixel with row and column coordinate $[278,319]$ since it appears just under the owl's chin and perfectly situated between the threads of the foreground screen. At the same time, this pixel was also selected because it sits on the boundary between the 15th and 16th wavelengths.  As such, we know its true phase is equal to $\frac{16}{60} = 26.67\%$ of the projected phase range with 0 corresponding to the bottom of the projected image and 100\% corresponding to the top.
+
+
+
+
+For generating the raw phase image, we employed the traditional procedure of using three unique pattern frequencies of 1, 12, and 60 wavelengths.  The 12 wavelengths were first unwrapped using the unit frequency pattern, and then this smooth unit frequency image was used to unwrap the 60 wavelengths.  Looking at pixel $[278,319]$, the traditional phase unwrapping process determined that the pixel had a phase of $18.27\%$, an error of $8.33\%$. Using the proposed multipath method produces a phase estimate of $26.76\%$, an insignificant error within round off of one pixel.  What this large error in traditional phase unwrapping can be attributed to is an error in the mid-frequency phase image, which incidentally would corresponding to plus or minus one wavelength or $\frac{1}{12}=8.33\%$.
+
+
+
+
+To see this phase unwrapping error in action, Fig.~\ref{figpah3} shows the raw phase images for 1, 12, and 60 wavelengths where the foreground screen interacts with the backgrounds to create a moir\'e pattern, which is a low-frequency sinusoidal grating created by the superposition of higher frequency gratings.  Note most importantly that there is a swatch of phase values in the area directly underneath the owl figurine, where light from the projector only intersects the foreground screen since the bottom of the projected image first reflects off the figurine about 1/4-inch from its base.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h]
+	\centering\includegraphics[width=4.8in]{Figures/angel1}
+	\caption{Point cloud reconstructions of the angel figurine (left) using raw phase (in yellow on the first row), multi-path processed phase (in red on the second row), and both before and after in a single coordinate space (in a mixture of red and yellow on the third row).}
+	\label{angel}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+As a similar demonstration of multi-path reconstruction, Fig.~\ref{angel} shows an angel figurine with the same screen placed over the angel's head and shoulders. The 3D point cloud reconstructions are shown in yellow on the first row showing the raw phase reconstruction, in red on the second row showing the multi-path reconstruction, and in a mixture of red and yellow on the third row showing both in a single coordinate space. In this illustration, we note that without the multi-path algorithm, traditional SLI reconstruction will result in multiple ghost layers of the screen that appear at incorrect position in front and behind the figurine. With our proposed algorithm, the ghost layers disappear and result in an accurate reconstruction of the screen in front of the figurine.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!t]
+	\centering\includegraphics[width=1.70in]{Figures/figure15}
+	\centering\includegraphics[width=1.70in]{Figures/figure14}
+	\centering\includegraphics[width=1.70in]{Figures/figure13}
+	\caption{The (center) raw and (right) multi-path phase images derived from looking into a (left) porcelain bowl.}
+	\label{bowl}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+	\centering\includegraphics[width=2.20in]{Figures/bowlbefore}
+	\centering\includegraphics[width=2.20in]{Figures/bowlafter}
+	\caption{Point cloud reconstructions of the bowl using (left) raw phase and (right) multi-path processed phase.}
+	\label{bowlresu}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+As a third demonstration of the multi-path technique, Figs.~\ref{bowl} and \ref{bowlresu} show the phase and point cloud reconstructions comparing again the traditional phase unwrapping procedure versus our proposed multi-path procedure when the target image is the inside of a white, porcelain bowl.  In this sample, specular reflections off the surface of the bowl create multi-paths, most evident at the top and the bottom of the bowl where the reflections stay within the epipolar geometry of the camera/projector lens alignment.  While the new multi-path procedure is not completely immune to issues cause by specularities on the target surface, it is greatly improved over the board artifacts introduced through phase unwrapping, as indicated  in Fig.~\ref{bowlresu}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[t]
+	\centering\includegraphics[width=1.60in]{Figures/mirror}
+	\caption{Mirror experiment setup.}
+	\label{mirror}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[!t]
+	\centering\includegraphics[width=4.30in]{Figures/result03}
+	\caption{The (left) raw and (right) multi-path phase images of a plastic giraffe.}
+	\label{mirrorresu}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+As a final demonstration, we used a mirror to reflect light from off to on target, a plastic giraffe figurine, as illustrated in the photograph of Fig.~\ref{mirror} with phase results shown in Fig.~\ref{mirrorresu}.  Looking at the raw phase image versus multi-path reconstructed, there are substantial artifacts in the raw phase as indicated by posterization, most visible in the region of the giraffe's neck/chest facing the mirror and especially in the top-right corner of the background screen and on the right side wall. These posterization effects are also visible in the reflected image of the mirror.
+
+As a scanning process, 3D reconstruction by means of structured light requires the target surface to remain still. So chief goal in pattern design is to minimize the number of patterns while minimizing the effect of sensor noise on the resulting 3D surface.  While high speed projector-camera pairs mitigate some of the concerns regarding high pattern counts, there is only so much one can do given the limits of the sensor versus exposure time.  So building an SLI scanner with 480 patterns to scan in the presence of multipath only invites more concerns around target motion, making alternative scanning means,  like active stereo, appealing. 
+
+Given the need to minimize the number of projected patterns, an obvious question becomes how many unique frequencies are actually necessary to separate the primary and secondary light paths.  Returning to eqn.~(\ref{??}), we note that we need to sample the f-axis at greater than twice the maximum possible frequency caused by multipath, but we don't need to sample the frequency axis along the entire length from 0 to X Hz. So our scheme of sampling the K-axis by simply doubling the scan frequency means that we can detect high frequency multipath signal using the... and the smallest multipath frequency using the K=x, x, and x. 
+
+Now of course the more frequencies that we use, the better the scan will be as we minimize the impact of sensor noise on our final path estimates, but using the proposed scheme, we experimentally determined the minimum number of frequencies from our proposed doubling-scheme to produce the stem plot of Fig.~X.  What this plot shows is the minimum number of frequencies we needed to detect each K-frequency along the x-axis of the stem plot.  Note these results are for noiseless simulations.  For an illustration of the number of frequencies used on real data, Fig.~Y shows the evolution of our owl scan using an increasing number of frequencies.  From visual inspection, the noiseless and true data show the same result that 9 unique scan frequencies is able to separate the majority of multipath instances in the scan.
+
+\section{Conclusions}
+\noindent In this paper, we introduced a novel procedure for extracting the bimodal multipath phase terms for a PMP structured light scan based on modeling the change in magnitude of the observed phasors caused by modulating the spatial frequency of the projected PMP patterns. Furthermore, we introduced the first PMP scans to employ zero-frequency PMP patterns as a way to measure the magnitude in the observed phasors sans multipath. As demonstrated here, the proposed technique is especially geared toward step edges and scanning through semi-transparent surfaces; however, the proposed derivation can be expanded to include more than two paths, although additional investigation is necessary to gauge how practical doing so is. 
+
+Although not considered here, the problem of multi-texture is very similar to the multi-path problem.  Here, a single pixel sees a continuous smooth surface, but the surface texture has a discontinuity or step edge mid-way across the pixel's field of view.  We can define the brighter side of the edge as the foreground surface while the darker side of the edge as the background surface. This means that the phase values inside the foreground surface will have a greater weight, per unit area, than the background surface.  And this has the effect of pushing the combined vector closer to the foreground phase than the background.  While the change may not be as severe as the multi-path problem, the solution is the same, by taking advantage of the presented interesting cue of measuring the constructive and destructive interference between the two light paths.
+
+%Although not considered here, we believe that the new procedure can easily be extended to novel SLM arrays such as TI's DLP3000 chipset which arranges mirrors into a diamond array composed of a square-sampling grid rotated 45 degrees.  Although commercially available, the current electronics driving these chips do not allow for a direct mapping of binary pixels from pattern memory to the DLP mirrors, so experiments couldn't be performed to prove this assertion. In future studies, we will return to this problem as the ability to unambiguously control mirrors improves. Meanwhile, we can focus on the multi-path problem of SLI scanning where blurring of the target surface across a given camera pixel may produce errors in phase, especially, along edges in texture. The imaging model described by eqn.~(\ref{eqn::costFunction}) can be extended to address this problem.
+
+
+\end{document}
